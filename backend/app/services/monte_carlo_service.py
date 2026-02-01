@@ -152,16 +152,25 @@ class RMDCalculator:
         """
         Calculate RMD for a given age and balance
         
+        Note: RMD age varies by birth year under SECURE 2.0:
+        - Age 73 for those born 1951-1959
+        - Age 75 for those born 1960 or later
+        
         Returns:
             Tuple of (rmd_amount, life_expectancy_factor)
         """
-        if age < 73:  # RMD age is 73 for those born 1951-1959
+        if age < 73:  # Minimum RMD age (may vary by birth year)
             return Decimal("0.00"), Decimal("0.00")
         
-        life_expectancy = RMDCalculator.LIFE_EXPECTANCY_TABLE.get(
-            age,
-            2.0 if age > 120 else 27.4  # Use 2.0 for very old, 27.4 for younger than 72
-        )
+        # Get life expectancy from IRS table
+        life_expectancy = RMDCalculator.LIFE_EXPECTANCY_TABLE.get(age)
+        
+        if life_expectancy is None:
+            if age > 120:
+                life_expectancy = 2.0  # Use minimum for very old ages
+            else:
+                # Age is below minimum table age (72), should not calculate RMD
+                return Decimal("0.00"), Decimal("0.00")
         
         rmd_amount = account_balance / Decimal(str(life_expectancy))
         return rmd_amount, Decimal(str(life_expectancy))

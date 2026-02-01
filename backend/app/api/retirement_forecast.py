@@ -138,11 +138,18 @@ class RMDRequest(BaseModel):
 @router.post("/rmd/project")
 def project_rmds(
     user_id: int,
-    forecast_id: Optional[int],
-    request: RMDRequest,
+    forecast_id: Optional[int] = None,
+    request: RMDRequest = ...,
     session: Session = Depends(get_session)
 ):
-    """Project Required Minimum Distributions"""
+    """
+    Project Required Minimum Distributions
+    
+    Args:
+        user_id: User ID (required)
+        forecast_id: Optional forecast ID to link projections to
+        request: RMD projection parameters
+    """
     
     # Calculate RMD projections
     projections = RMDCalculator.project_rmds(
@@ -219,11 +226,18 @@ class IRMAARequest(BaseModel):
 @router.post("/irmaa/project")
 def project_irmaa(
     user_id: int,
-    forecast_id: Optional[int],
-    request: IRMAARequest,
+    forecast_id: Optional[int] = None,
+    request: IRMAARequest = ...,
     session: Session = Depends(get_session)
 ):
-    """Project IRMAA (Medicare surcharges) based on income"""
+    """
+    Project IRMAA (Medicare surcharges) based on income
+    
+    Args:
+        user_id: User ID (required)
+        forecast_id: Optional forecast ID to link projections to and use RMD data
+        request: IRMAA projection parameters
+    """
     
     # Get RMD projections if they exist
     rmd_projections = []

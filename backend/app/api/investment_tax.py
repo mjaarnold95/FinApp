@@ -25,7 +25,7 @@ class InvestmentTransactionCreate(BaseModel):
     tax_classification: TaxClassification
     amount: Decimal
     description: str
-    notes: str = None
+    notes: Optional[str] = None
 
 
 @router.get("/buckets/account/{account_id}", response_model=List[InvestmentTaxBucket])
