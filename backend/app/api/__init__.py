@@ -8,6 +8,7 @@ from .retirement import router as retirement_router
 from .taxes import router as taxes_router
 from .plaid import router as plaid_router
 from .import_export import router as import_export_router
+from .websocket import router as websocket_router
 
 __all__ = [
     "users_router",
@@ -20,4 +21,5 @@ __all__ = [
     "taxes_router",
     "plaid_router",
     "import_export_router",
+    "websocket_router",
 ]

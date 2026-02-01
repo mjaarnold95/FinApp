@@ -1,6 +1,6 @@
 # FinApp 💰
 
-A comprehensive personal finance application for tracking expenses, income, investments, taxes, payroll, and retirement planning with modern double-entry accounting.
+A comprehensive personal finance application for tracking expenses, income, investments, taxes, payroll, and retirement planning with modern double-entry accounting. Available on **Web, iOS, and macOS** with real-time synchronization.
 
 ## Features
 
@@ -16,6 +16,27 @@ A comprehensive personal finance application for tracking expenses, income, inve
 - **Financial Insights**: Dashboard with comprehensive financial overview
 - **🆕 Plaid Integration**: Automatic bank account linking and transaction import
 - **🆕 Import/Export**: CSV import and export for transactions, accounts, and investments
+- **🆕 Native Apps**: iOS and macOS apps with real-time sync across all platforms
+- **🆕 Cross-Platform Sync**: WebSocket-based synchronization ensures data consistency
+
+## Platforms
+
+### Web Application
+- Modern React 18 frontend
+- Responsive design for desktop and mobile browsers
+- Progressive Web App (PWA) support
+
+### iOS Application
+- Native SwiftUI app for iPhone and iPad
+- iOS 16.0 or later
+- Optimized for touch interactions
+
+### macOS Application
+- Native SwiftUI app for Mac
+- macOS 13.0 (Ventura) or later
+- Full keyboard navigation and window management
+
+**All platforms sync in real-time** - changes made on one device instantly appear on all others.
 
 ## Tech Stack
 
@@ -25,6 +46,7 @@ A comprehensive personal finance application for tracking expenses, income, inve
 - **SQLModel** - SQL database ORM with Pydantic integration
 - **PostgreSQL 18** - Database (via psycopg >= 3.3)
 - **Plaid** - Bank account integration for automatic transaction import
+- **WebSocket** - Real-time synchronization across platforms
 - **Uvicorn** - ASGI server
 - **uv** - Fast Python package manager
 
@@ -34,6 +56,12 @@ A comprehensive personal finance application for tracking expenses, income, inve
 - **Axios** - HTTP client
 - **Vite** - Fast build tool
 - **CSS3** - Custom styling with gradients and animations
+
+### Native Apps (iOS & macOS)
+- **SwiftUI** - Modern declarative UI framework
+- **Combine** - Reactive programming
+- **URLSession** - Networking and WebSocket support
+- **Universal Binary** - Single codebase for iOS and macOS
 
 ## Project Structure
 
@@ -49,13 +77,60 @@ FinApp/
 │   │   │   ├── investment.py
 │   │   │   ├── tax.py
 │   │   │   ├── payroll.py
-│   │   │   └── retirement.py
+│   │   │   ├── retirement.py
+│   │   │   └── plaid.py
 │   │   ├── api/             # API endpoints
 │   │   │   ├── users.py
 │   │   │   ├── accounts.py
 │   │   │   ├── transactions.py
 │   │   │   ├── investments.py
 │   │   │   ├── payroll.py
+│   │   │   ├── retirement.py
+│   │   │   ├── taxes.py
+│   │   │   ├── plaid.py
+│   │   │   ├── import_export.py
+│   │   │   └── websocket.py    # Real-time sync
+│   │   ├── services/        # Business logic
+│   │   │   └── plaid_service.py
+│   │   ├── core/            # Core configuration
+│   │   │   ├── config.py
+│   │   │   └── database.py
+│   │   └── main.py          # FastAPI application
+│   ├── run.py               # Server runner
+│   └── pyproject.toml       # Python dependencies
+├── frontend/
+│   ├── src/
+│   │   ├── pages/           # Page components
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── Accounts.jsx
+│   │   │   ├── Transactions.jsx
+│   │   │   ├── Investments.jsx
+│   │   │   ├── Payroll.jsx
+│   │   │   ├── Retirement.jsx
+│   │   │   └── Taxes.jsx
+│   │   ├── styles/          # CSS styles
+│   │   ├── App.jsx          # Main app component
+│   │   └── main.jsx         # Entry point
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.js
+├── ios-macos/               # Native iOS & macOS apps
+│   ├── FinApp.xcodeproj/    # Xcode project
+│   ├── FinApp/
+│   │   ├── FinAppApp.swift  # App entry point
+│   │   ├── Models/          # Data models
+│   │   │   └── Models.swift
+│   │   ├── Views/           # SwiftUI views
+│   │   │   ├── ContentView.swift
+│   │   │   ├── DashboardView.swift
+│   │   │   ├── AccountsView.swift
+│   │   │   └── TransactionsView.swift
+│   │   └── Services/        # API & sync services
+│   │       ├── APIService.swift
+│   │       └── SyncService.swift
+│   └── README.md
+└── README.md
+```
 │   │   │   ├── retirement.py
 │   │   │   └── taxes.py
 │   │   ├── core/            # Core configuration
@@ -150,6 +225,30 @@ npm install
 ```bash
 npm run dev
 ```
+
+The frontend will be available at http://localhost:3000
+
+### iOS & macOS Apps Setup
+
+1. Navigate to the iOS/macOS directory:
+```bash
+cd ios-macos
+```
+
+2. Open the project in Xcode:
+```bash
+open FinApp.xcodeproj
+```
+
+3. Select your target:
+   - **FinApp-iOS** for iPhone/iPad simulator or device
+   - **FinApp-macOS** for Mac
+
+4. Build and run (⌘R)
+
+**Note**: The apps connect to `http://localhost:8000` by default. Make sure the backend is running before launching the native apps.
+
+For more details, see [ios-macos/README.md](ios-macos/README.md)
 
 The frontend will be available at http://localhost:3000
 
@@ -268,6 +367,58 @@ symbol,name,investment_type,quantity,purchase_price,current_price,purchase_date,
 AAPL,Apple Inc.,stock,10,150.00,175.00,2024-01-01,1
 TSLA,Tesla Inc.,stock,5,200.00,220.00,2024-01-15,1
 ```
+
+## Cross-Platform Synchronization
+
+FinApp keeps your data in sync across all platforms in real-time using WebSocket technology.
+
+### How It Works
+
+1. **WebSocket Connection**: Each app (web, iOS, macOS) establishes a WebSocket connection to the backend at `ws://localhost:8000/ws/sync/{user_id}`
+
+2. **Real-Time Updates**: When data changes on any platform:
+   - The backend broadcasts a notification to all connected clients for that user
+   - All other apps receive the notification and refresh their data
+   - Changes appear instantly across all devices
+
+3. **Fallback Polling**: If WebSocket is unavailable:
+   - Apps poll the server every 30 seconds for changes
+   - Ensures synchronization even with network issues
+
+### Example Sync Flow
+
+```
+User adds transaction on iOS
+    ↓
+iOS app → POST /api/v1/transactions
+    ↓
+Backend creates transaction & ledger entries
+    ↓
+Backend broadcasts WebSocket message
+    ↓
+macOS app ← WebSocket notification
+Web app ← WebSocket notification
+    ↓
+All apps refresh and display new transaction
+```
+
+### Running Multiple Apps
+
+1. Start the backend server:
+   ```bash
+   cd backend
+   python run.py
+   ```
+
+2. Start the web app:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+3. Open the iOS/macOS app in Xcode and run
+
+All apps will automatically sync changes made in any of them.
 
 ## Database Models
 
