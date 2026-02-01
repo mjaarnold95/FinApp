@@ -7,6 +7,7 @@ from .investment import Investment, InvestmentType
 from .tax import TaxRecord
 from .payroll import Payroll, Deduction, Withholding
 from .retirement import RetirementAccount, RetirementType
+from .plaid import PlaidItem, PlaidAccount
 
 __all__ = [
     "User",
@@ -24,4 +25,6 @@ __all__ = [
     "Withholding",
     "RetirementAccount",
     "RetirementType",
+    "PlaidItem",
+    "PlaidAccount",
 ]

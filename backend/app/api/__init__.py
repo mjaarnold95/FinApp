@@ -6,6 +6,8 @@ from .investments import router as investments_router
 from .payroll import router as payroll_router
 from .retirement import router as retirement_router
 from .taxes import router as taxes_router
+from .plaid import router as plaid_router
+from .import_export import router as import_export_router
 
 __all__ = [
     "users_router",
@@ -16,4 +18,6 @@ __all__ = [
     "payroll_router",
     "retirement_router",
     "taxes_router",
+    "plaid_router",
+    "import_export_router",
 ]

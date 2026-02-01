@@ -27,6 +27,12 @@ class Settings(BaseSettings):
     # Comma-separated list of allowed origins for CORS
     cors_origins: str = "*"  # WARNING: Set to specific origins in production!
     
+    # Plaid Integration
+    plaid_client_id: str = ""
+    plaid_secret: str = ""
+    plaid_environment: str = "sandbox"  # sandbox, development, or production
+    plaid_redirect_uri: str = "http://localhost:3000/plaid/callback"
+    
     class Config:
         env_file = ".env"
     
@@ -60,6 +66,11 @@ def validate_production_settings():
         if settings.cors_origins == "*":
             raise ValueError(
                 "CORS_ORIGINS must be set to specific origins in production!"
+            )
+        
+        if not settings.plaid_client_id or not settings.plaid_secret:
+            raise ValueError(
+                "PLAID_CLIENT_ID and PLAID_SECRET must be set in production!"
             )
 
 # Run validation

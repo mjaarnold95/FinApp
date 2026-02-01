@@ -14,6 +14,8 @@ A comprehensive personal finance application for tracking expenses, income, inve
 - **Payroll**: Track jobs, deductions, and withholdings
 - **Retirement**: Plan for retirement with 401(k), IRA, and pension accounts
 - **Financial Insights**: Dashboard with comprehensive financial overview
+- **🆕 Plaid Integration**: Automatic bank account linking and transaction import
+- **🆕 Import/Export**: CSV import and export for transactions, accounts, and investments
 
 ## Tech Stack
 
@@ -21,7 +23,8 @@ A comprehensive personal finance application for tracking expenses, income, inve
 - **Python** >= 3.14
 - **FastAPI** - Modern, fast web framework
 - **SQLModel** - SQL database ORM with Pydantic integration
-- **PostgreSQL** - Database (via psycopg >= 3.3)
+- **PostgreSQL 18** - Database (via psycopg >= 3.3)
+- **Plaid** - Bank account integration for automatic transaction import
 - **Uvicorn** - ASGI server
 - **uv** - Fast Python package manager
 
@@ -85,7 +88,7 @@ FinApp/
 ### Prerequisites
 - Python >= 3.14
 - Node.js >= 18
-- PostgreSQL >= 14
+- PostgreSQL >= 18
 - uv (Python package manager)
 
 ### Backend Setup
@@ -203,6 +206,68 @@ The API provides comprehensive endpoints for managing all financial data:
 - `POST /api/v1/taxes` - Create tax record
 - `PUT /api/v1/taxes/{id}` - Update tax record
 - `DELETE /api/v1/taxes/{id}` - Delete tax record
+
+### 🆕 Plaid Integration
+- `POST /api/v1/plaid/link-token` - Create Plaid Link token for bank connection
+- `POST /api/v1/plaid/exchange-token` - Exchange public token and link accounts
+- `POST /api/v1/plaid/sync-transactions` - Sync transactions from linked bank
+- `GET /api/v1/plaid/items` - List linked bank connections
+- `DELETE /api/v1/plaid/items/{id}` - Remove bank connection
+
+### 🆕 Import/Export
+- `POST /api/v1/import-export/transactions/import` - Import transactions from CSV
+- `GET /api/v1/import-export/transactions/export` - Export transactions to CSV
+- `POST /api/v1/import-export/accounts/import` - Import accounts from CSV
+- `GET /api/v1/import-export/accounts/export` - Export accounts to CSV
+- `POST /api/v1/import-export/investments/import` - Import investments from CSV
+- `GET /api/v1/import-export/investments/export` - Export investments to CSV
+
+## Plaid Integration
+
+FinApp integrates with Plaid to automatically import transactions from your bank accounts.
+
+### Setup
+1. Sign up for a Plaid account at https://plaid.com
+2. Get your Client ID and Secret from the Plaid Dashboard
+3. Add them to your `.env` file:
+   ```
+   PLAID_CLIENT_ID=your-client-id
+   PLAID_SECRET=your-secret
+   PLAID_ENVIRONMENT=sandbox  # Use 'production' for real banks
+   ```
+
+### Usage
+1. Call `POST /api/v1/plaid/link-token` to get a link token
+2. Use Plaid Link (frontend) to connect a bank account
+3. Exchange the public token with `POST /api/v1/plaid/exchange-token`
+4. Sync transactions with `POST /api/v1/plaid/sync-transactions`
+
+Transactions are automatically imported and ledger entries are created following double-entry accounting principles.
+
+## Import/Export
+
+### CSV Import Format
+
+**Transactions CSV:**
+```csv
+date,description,amount,category,merchant,account_id
+2024-01-15,Grocery Store,75.50,Food & Dining,Whole Foods,1
+2024-01-16,Salary,2500.00,Income,Employer,2
+```
+
+**Accounts CSV:**
+```csv
+name,account_type,balance,currency
+Chase Checking,checking,5000.00,USD
+Savings Account,savings,10000.00,USD
+```
+
+**Investments CSV:**
+```csv
+symbol,name,investment_type,quantity,purchase_price,current_price,purchase_date,account_id
+AAPL,Apple Inc.,stock,10,150.00,175.00,2024-01-01,1
+TSLA,Tesla Inc.,stock,5,200.00,220.00,2024-01-15,1
+```
 
 ## Database Models
 
