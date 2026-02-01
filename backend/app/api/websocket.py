@@ -1,5 +1,6 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from typing import Dict, Set
+from datetime import datetime, timezone
 import json
 
 router = APIRouter()
@@ -32,7 +33,8 @@ class ConnectionManager:
             for connection in active_connections[user_id]:
                 try:
                     await connection.send_json(message)
-                except:
+                except Exception as e:
+                    print(f"Error sending to connection: {e}")
                     disconnected.append(connection)
             
             # Clean up disconnected clients
@@ -46,7 +48,7 @@ class ConnectionManager:
             "resource": resource_type,
             "action": action,  # created, updated, deleted
             "data": data,
-            "timestamp": json.dumps({"utc": "now"})  # Placeholder for actual timestamp
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
         await self.broadcast_to_user(user_id, message)
 

@@ -131,32 +131,6 @@ FinApp/
 │   └── README.md
 └── README.md
 ```
-│   │   │   ├── retirement.py
-│   │   │   └── taxes.py
-│   │   ├── core/            # Core configuration
-│   │   │   ├── config.py
-│   │   │   └── database.py
-│   │   └── main.py          # FastAPI application
-│   ├── run.py               # Server runner
-│   └── pyproject.toml       # Python dependencies
-├── frontend/
-│   ├── src/
-│   │   ├── pages/           # Page components
-│   │   │   ├── Dashboard.jsx
-│   │   │   ├── Accounts.jsx
-│   │   │   ├── Transactions.jsx
-│   │   │   ├── Investments.jsx
-│   │   │   ├── Payroll.jsx
-│   │   │   ├── Retirement.jsx
-│   │   │   └── Taxes.jsx
-│   │   ├── styles/          # CSS styles
-│   │   ├── App.jsx          # Main app component
-│   │   └── main.jsx         # Entry point
-│   ├── index.html
-│   ├── package.json
-│   └── vite.config.js
-└── README.md
-```
 
 ## Installation
 
