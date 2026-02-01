@@ -70,7 +70,8 @@ def validate_production_settings():
         
         if not settings.plaid_client_id or not settings.plaid_secret:
             raise ValueError(
-                "PLAID_CLIENT_ID and PLAID_SECRET must be set in production!"
+                "PLAID_CLIENT_ID and PLAID_SECRET must be set in production! "
+                "Get credentials from https://plaid.com"
             )
 
 # Run validation

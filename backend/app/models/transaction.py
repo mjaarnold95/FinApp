@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Optional
 from sqlmodel import Field, SQLModel
@@ -18,5 +18,6 @@ class Transaction(SQLModel, table=True):
     merchant: Optional[str] = None
     notes: Optional[str] = None
     is_recurring: bool = Field(default=False)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    plaid_transaction_id: Optional[str] = Field(default=None, unique=True, index=True)  # Plaid transaction ID for deduplication
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

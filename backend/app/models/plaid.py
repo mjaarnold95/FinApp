@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from sqlmodel import Field, SQLModel
 
@@ -16,8 +16,8 @@ class PlaidItem(SQLModel, table=True):
     institution_name: str
     last_synced: Optional[datetime] = None
     is_active: bool = Field(default=True)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class PlaidAccount(SQLModel, table=True):
@@ -32,4 +32,4 @@ class PlaidAccount(SQLModel, table=True):
     account_mask: Optional[str] = None  # Last 4 digits
     account_type: str  # checking, savings, credit, etc.
     account_subtype: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

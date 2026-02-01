@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from typing import List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 from ..core.database import get_session
@@ -57,7 +57,7 @@ def exchange_public_token(request: PublicTokenExchange, session: Session = Depen
             plaid_access_token=access_token,
             institution_id=plaid_accounts[0].get('institution_id', ''),
             institution_name=plaid_accounts[0].get('institution_name', 'Unknown'),
-            last_synced=datetime.utcnow()
+            last_synced=datetime.now(timezone.utc)
         )
         session.add(plaid_item)
         session.commit()
@@ -139,28 +139,36 @@ def sync_transactions(request: SyncRequest, session: Session = Depends(get_sessi
             if not account_id:
                 continue
             
-            # Check if transaction already exists
+            plaid_txn_id = plaid_txn.get('transaction_id')
+            if not plaid_txn_id:
+                continue
+            
+            # Check if transaction already exists using Plaid transaction ID
             existing = session.exec(
                 select(Transaction).where(
-                    Transaction.account_id == account_id,
-                    Transaction.description == plaid_txn.get('name', 'Unknown'),
-                    Transaction.amount == Decimal(str(plaid_txn.get('amount', 0.0)))
+                    Transaction.plaid_transaction_id == plaid_txn_id
                 )
             ).first()
             
             if existing:
                 continue
             
+            # Get transaction date or skip if missing
+            txn_date_str = plaid_txn.get('date')
+            if not txn_date_str:
+                continue  # Skip transactions without a date
+            
             # Create transaction
             amount = Decimal(str(-plaid_txn.get('amount', 0.0)))  # Plaid uses negative for income
             transaction = Transaction(
                 user_id=plaid_item.user_id,
                 account_id=account_id,
-                transaction_date=datetime.fromisoformat(plaid_txn.get('date', datetime.utcnow().isoformat())),
+                transaction_date=datetime.fromisoformat(txn_date_str),
                 description=plaid_txn.get('name', 'Unknown'),
                 amount=amount,
                 category=', '.join(plaid_txn.get('category', [])),
-                merchant=plaid_txn.get('merchant_name')
+                merchant=plaid_txn.get('merchant_name'),
+                plaid_transaction_id=plaid_txn_id
             )
             session.add(transaction)
             session.commit()
@@ -182,13 +190,13 @@ def sync_transactions(request: SyncRequest, session: Session = Depends(get_sessi
             account = session.get(Account, account_id)
             if account:
                 account.balance += amount
-                account.updated_at = datetime.utcnow()
+                account.updated_at = datetime.now(timezone.utc)
                 session.add(account)
             
             imported_count += 1
         
         # Update last synced
-        plaid_item.last_synced = datetime.utcnow()
+        plaid_item.last_synced = datetime.now(timezone.utc)
         session.add(plaid_item)
         session.commit()
         

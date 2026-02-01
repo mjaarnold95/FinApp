@@ -79,7 +79,7 @@ class PlaidService:
         try:
             request = ItemPublicTokenExchangeRequest(public_token=public_token)
             response = self.client.item_public_token_exchange(request)
-            return response['access_token']
+            return response.access_token
         except plaid.ApiException as e:
             raise Exception(f"Error exchanging public token: {e}")
     
@@ -96,7 +96,7 @@ class PlaidService:
         try:
             request = AccountsGetRequest(access_token=access_token)
             response = self.client.accounts_get(request)
-            return [account.to_dict() for account in response['accounts']]
+            return [account.to_dict() for account in response.accounts]
         except plaid.ApiException as e:
             raise Exception(f"Error fetching accounts: {e}")
     
@@ -124,10 +124,10 @@ class PlaidService:
                 end_date=end_date.date(),
             )
             response = self.client.transactions_get(request)
-            transactions = response['transactions']
+            transactions = response.transactions
             
             # Handle pagination
-            while len(transactions) < response['total_transactions']:
+            while len(transactions) < response.total_transactions:
                 request = TransactionsGetRequest(
                     access_token=access_token,
                     start_date=start_date.date(),
@@ -135,7 +135,7 @@ class PlaidService:
                     offset=len(transactions)
                 )
                 response = self.client.transactions_get(request)
-                transactions.extend(response['transactions'])
+                transactions.extend(response.transactions)
             
             return [txn.to_dict() for txn in transactions]
         except plaid.ApiException as e:
