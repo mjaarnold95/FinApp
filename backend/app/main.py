@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .core.config import settings
 from .core.database import create_db_and_tables
-from .api import users, accounts, transactions, investments, payroll, retirement, taxes
+from .api import users, institutions, accounts, transactions, investments, payroll, retirement, taxes
 
 app = FastAPI(
     title=settings.project_name,
@@ -45,6 +45,7 @@ def health():
 
 # Include routers
 app.include_router(users.router, prefix=settings.api_prefix)
+app.include_router(institutions.router, prefix=settings.api_prefix)
 app.include_router(accounts.router, prefix=settings.api_prefix)
 app.include_router(transactions.router, prefix=settings.api_prefix)
 app.include_router(investments.router, prefix=settings.api_prefix)

@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     """Application settings"""
     
     # Database
-    database_url: str = "postgresql://finapp:finapp@localhost:5432/finapp"
+    database_url: str = "postgresql+psycopg://finapp:finapp@localhost:5432/finapp"
     
     # API
     api_prefix: str = "/api/v1"
