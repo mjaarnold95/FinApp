@@ -3,7 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .core.config import settings
 from .core.database import create_db_and_tables
-from .api import users, institutions, accounts, transactions, investments, payroll, retirement, taxes, plaid, import_export, websocket
+from .api import (
+    users, institutions, accounts, transactions, investments, investment_tax,
+    payroll, retirement, retirement_forecast, taxes, plaid, import_export, websocket
+)
 
 app = FastAPI(
     title=settings.project_name,
@@ -49,8 +52,10 @@ app.include_router(institutions.router, prefix=settings.api_prefix)
 app.include_router(accounts.router, prefix=settings.api_prefix)
 app.include_router(transactions.router, prefix=settings.api_prefix)
 app.include_router(investments.router, prefix=settings.api_prefix)
+app.include_router(investment_tax.router, prefix=settings.api_prefix)
 app.include_router(payroll.router, prefix=settings.api_prefix)
 app.include_router(retirement.router, prefix=settings.api_prefix)
+app.include_router(retirement_forecast.router, prefix=settings.api_prefix)
 app.include_router(taxes.router, prefix=settings.api_prefix)
 app.include_router(plaid.router, prefix=settings.api_prefix)
 app.include_router(import_export.router, prefix=settings.api_prefix)

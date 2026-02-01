@@ -10,14 +10,22 @@ A comprehensive personal finance application for tracking expenses, income, inve
 - **Transactions**: Record income and expenses with detailed categorization
 - **Double-Entry Ledger**: Proper accounting with debits and credits
 - **Investments**: Track stocks, bonds, ETFs, crypto, and real estate
+  - **🆕 Tax Classifications**: Pre-tax, Roth, and after-tax buckets within accounts
+  - **🆕 Multiple Tax Buckets**: Track different tax treatments in same account
+  - **🆕 Aggregate and Detailed Views**: See total balance and individual bucket breakdowns
 - **Taxes**: Manage tax records, withholdings, and filings
 - **Payroll**: Track jobs, deductions, and withholdings
 - **Retirement**: Plan for retirement with 401(k), IRA, and pension accounts
+  - **🆕 Monte Carlo Simulation**: 10,000+ simulations for success probability
+  - **🆕 RMD Projections**: Required Minimum Distribution forecasting
+  - **🆕 IRMAA Planning**: Medicare premium surcharge calculations
+  - **🆕 Income Projections**: Integrated forecasting with transactions and payroll
+  - **🆕 Retirement Scenarios**: Compare different retirement strategies
 - **Financial Insights**: Dashboard with comprehensive financial overview
-- **🆕 Plaid Integration**: Automatic bank account linking and transaction import
-- **🆕 Import/Export**: CSV import and export for transactions, accounts, and investments
-- **🆕 Native Apps**: iOS and macOS apps with real-time sync across all platforms
-- **🆕 Cross-Platform Sync**: WebSocket-based synchronization ensures data consistency
+- **Plaid Integration**: Automatic bank account linking and transaction import
+- **Import/Export**: CSV import and export for transactions, accounts, and investments
+- **Native Apps**: iOS and macOS apps with real-time sync across all platforms
+- **Cross-Platform Sync**: WebSocket-based synchronization ensures data consistency
 
 ## Platforms
 
@@ -393,6 +401,127 @@ All apps refresh and display new transaction
 3. Open the iOS/macOS app in Xcode and run
 
 All apps will automatically sync changes made in any of them.
+
+## Advanced Investment & Retirement Planning
+
+### Tax-Advantaged Investment Tracking
+
+FinApp supports sophisticated tax planning by allowing you to classify investments within accounts:
+
+**Tax Classifications:**
+- **Pre-Tax**: Traditional 401(k), Traditional IRA contributions
+- **Roth**: Roth 401(k), Roth IRA contributions
+- **After-Tax**: After-tax 401(k) contributions (for mega backdoor Roth)
+- **Taxable**: Regular brokerage account investments
+
+**Multiple Buckets Per Account:**
+You can have multiple tax classifications within a single account. For example, a 401(k) can have:
+- Pre-tax bucket: $50,000 (traditional contributions)
+- Roth bucket: $30,000 (Roth 401k contributions)
+- After-tax bucket: $20,000 (after-tax contributions for conversion)
+
+API endpoints:
+- `POST /api/v1/investment-tax/buckets` - Create tax bucket
+- `GET /api/v1/investment-tax/account/{account_id}/summary` - View all buckets
+
+### Monte Carlo Retirement Simulation
+
+Run sophisticated Monte Carlo simulations (10,000+ iterations) to determine retirement success probability:
+
+```python
+# Example API call
+POST /api/v1/retirement-forecast/forecast?user_id=1
+{
+  "forecast_name": "Base Case Retirement",
+  "current_age": 35,
+  "retirement_age": 65,
+  "life_expectancy": 95,
+  "current_savings": 250000,
+  "annual_contribution": 25000,
+  "annual_withdrawal": 80000,
+  "expected_return": 7.0,
+  "volatility": 15.0,
+  "inflation_rate": 2.5,
+  "num_simulations": 10000
+}
+```
+
+**Results Include:**
+- Success rate (% of simulations where money lasts entire retirement)
+- Median, 10th percentile, and 90th percentile final balances
+- Year-by-year projections with confidence intervals
+- Visualization data for probability distributions
+
+### Required Minimum Distribution (RMD) Planning
+
+Automatically project RMDs starting at age 73 using IRS Uniform Lifetime Tables:
+
+```python
+POST /api/v1/retirement-forecast/rmd/project
+{
+  "starting_age": 73,
+  "ending_age": 100,
+  "pre_tax_balance": 1000000,
+  "expected_return": 6.0,
+  "additional_withdrawals": 20000
+}
+```
+
+**Features:**
+- IRS life expectancy factors (2024+ tables)
+- Year-by-year RMD amounts
+- Integration with retirement forecasts
+- Account balance projections accounting for RMDs
+
+### IRMAA (Medicare Premium Surcharge) Projections
+
+Calculate Income-Related Monthly Adjustment Amounts for Medicare Part B and D based on MAGI:
+
+```python
+POST /api/v1/retirement-forecast/irmaa/project
+{
+  "starting_age": 65,
+  "ending_age": 95,
+  "social_security": 35000,
+  "pension": 20000,
+  "investment_income": 15000,
+  "filing_status": "single"
+}
+```
+
+**IRMAA Tiers (2024):**
+- Standard: MAGI < $103,000 (single) - No surcharge
+- Tier 1: $103,000-$129,000 - $69.90/month Part B + $12.20/month Part D
+- Tier 2: $129,000-$161,000 - $174.70/month Part B + $31.50/month Part D
+- Tier 3: $161,000-$193,000 - $279.50/month Part B + $50.70/month Part D
+- Tier 4: $193,000-$500,000 - $384.30/month Part B + $70.00/month Part D
+- Tier 5: $500,000+ - $419.30/month Part B + $76.40/month Part D
+
+**Integration:**
+- Automatically incorporates RMD income
+- Projects total healthcare costs in retirement
+- Helps optimize Roth conversion strategies to minimize IRMAA
+- Calculates MAGI from all income sources
+
+### Retirement Strategy Comparison
+
+Compare different retirement scenarios side-by-side:
+- Different retirement ages
+- Various contribution levels
+- Roth conversion strategies
+- Withdrawal rates
+- Part-time work during retirement
+
+Get comprehensive tax bucket summaries:
+```
+GET /api/v1/retirement-forecast/user/{user_id}/tax-bucket-summary
+```
+
+Returns total balances across all accounts broken down by tax classification, essential for:
+- Tax diversification analysis
+- Withdrawal strategy planning
+- Roth conversion decision-making
+- Estate planning considerations
 
 ## Database Models
 
