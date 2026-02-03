@@ -1,0 +1,18 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+		{isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinAppApp.swift; };
+		{isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; };
+		{isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; };
+		{isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsView.swift; };
+		{isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsView.swift; };
+		{isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; };
+		{isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncService.swift; };
+		{isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; };
+	};
+	rootObject = {isa = PBXProject; };
+}
